@@ -73,7 +73,27 @@ npm run deploy
 |-------|--------|---------|
 | `domain` | any FQDN | *required* |
 | `type` | `A` / `AAAA` / `CNAME` / `MX` / `TXT` / `NS` | `A` |
-| `server` | `cloudflare` / `google` / `quad9` | `cloudflare` |
+| `server` | see table below | `cloudflare` |
+
+**Resolvers:**
+
+| Key | Provider | DoH endpoint |
+|-----|----------|--------------|
+| `cloudflare` | Cloudflare 1.1.1.1 | `cloudflare-dns.com/dns-query` |
+| `cloudflare2` | Cloudflare 1.0.0.1 | `cloudflare-dns.com/dns-query` |
+| `google` | Google 8.8.8.8 | `dns.google/resolve` |
+| `google2` | Google 8.8.4.4 | `dns.google/resolve` |
+| `quad9` | Quad9 9.9.9.9 | `dns.quad9.net/dns-query` |
+| `quad9_secondary` | Quad9 149.112.112.112 | `dns.quad9.net/dns-query` |
+| `opendns` | OpenDNS 208.67.222.222 | `doh.opendns.com/dns-query` |
+| `adguard` | AdGuard DNS (default) | `dns.adguard-dns.com/dns-query` |
+| `adguard_family` | AdGuard DNS (family filter) | `family.adguard-dns.com/dns-query` |
+| `nextdns` | NextDNS | `dns.nextdns.io/dns-query` |
+| `mullvad` | Mullvad (adblock) | `adblock.dns.mullvad.net/dns-query` |
+| `dnssb` | DNS.SB | `doh.dns.sb/dns-query` |
+| `alidns` | AliDNS 223.5.5.5 | `dns.alidns.com/resolve` |
+| `dnspod` | DNSPod (doh.pub) | `doh.pub/dns-query` |
+| `q360` | 360 DNS | `doh.360.cn/dns-query` |
 
 Example:
 

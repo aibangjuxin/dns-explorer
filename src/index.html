@@ -39,9 +39,27 @@
       <div class="field field-server">
         <label for="server">Resolver</label>
         <select id="server">
-          <option value="cloudflare">Cloudflare 1.1.1.1</option>
-          <option value="google">Google 8.8.8.8</option>
-          <option value="quad9">Quad9 9.9.9.9</option>
+          <optgroup label="Global">
+            <option value="cloudflare">Cloudflare 1.1.1.1</option>
+            <option value="cloudflare2">Cloudflare 1.0.0.1</option>
+            <option value="google">Google 8.8.8.8</option>
+            <option value="google2">Google 8.8.4.4</option>
+            <option value="quad9">Quad9 9.9.9.9</option>
+            <option value="quad9_secondary">Quad9 149.112.112.112</option>
+            <option value="opendns">OpenDNS 208.67.222.222</option>
+          </optgroup>
+          <optgroup label="Privacy / Filtering">
+            <option value="adguard">AdGuard DNS (default)</option>
+            <option value="adguard_family">AdGuard DNS (family)</option>
+            <option value="nextdns">NextDNS</option>
+            <option value="mullvad">Mullvad (adblock)</option>
+            <option value="dnssb">DNS.SB</option>
+          </optgroup>
+          <optgroup label="China">
+            <option value="alidns">AliDNS 223.5.5.5</option>
+            <option value="dnspod">DNSPod (doh.pub)</option>
+            <option value="q360">360 DNS</option>
+          </optgroup>
         </select>
       </div>
       <button id="query-btn" class="btn-primary">🔍 Lookup</button>

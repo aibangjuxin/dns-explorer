@@ -27,8 +27,20 @@ type PagesFunction = (ctx: PagesContext) => Promise<Response> | Response;
 
 const DOH_ENDPOINTS: Record<string, string> = {
   cloudflare: 'https://cloudflare-dns.com/dns-query',
+  cloudflare2: 'https://cloudflare-dns.com/dns-query',
   google: 'https://dns.google/resolve',
+  google2: 'https://dns.google/resolve',
   quad9: 'https://dns.quad9.net/dns-query',
+  quad9_secondary: 'https://dns.quad9.net/dns-query',
+  opendns: 'https://doh.opendns.com/dns-query',
+  adguard: 'https://dns.adguard-dns.com/dns-query',
+  adguard_family: 'https://family.adguard-dns.com/dns-query',
+  nextdns: 'https://dns.nextdns.io/dns-query',
+  mullvad: 'https://adblock.dns.mullvad.net/dns-query',
+  dnssb: 'https://doh.dns.sb/dns-query',
+  dnspod: 'https://doh.pub/dns-query',
+  alidns: 'https://dns.alidns.com/resolve',
+  q360: 'https://doh.360.cn/dns-query',
 };
 
 const CORS_HEADERS: Record<string, string> = {
