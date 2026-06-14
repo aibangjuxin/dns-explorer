@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Real-time DNS lookup via Cloudflare Pages Functions + DoH",
   "scripts": {
-    "dev": "wrangler pages dev ./src --compatibility-date=2026-01-01",
+    "dev": "wrangler pages dev ./src",
     "deploy": "wrangler pages deploy ./src --project-name=dns-explorer --branch=main",
     "deploy:preview": "wrangler pages deploy ./src --project-name=dns-explorer"
   },
