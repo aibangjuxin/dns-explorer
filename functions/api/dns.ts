@@ -18,6 +18,21 @@ interface DoHResponse {
   Answer?: DnsAnswer[];
 }
 
+interface ExtractedRecord {
+  data: string;
+  type: string;
+  ttl: number;
+  ipClass?: string;
+}
+
+interface ExtractedRecords {
+  ips: ExtractedRecord[];
+  aliases: ExtractedRecord[];
+  texts: ExtractedRecord[];
+  mx: ExtractedRecord[];
+  other: ExtractedRecord[];
+}
+
 interface PagesContext {
   request: Request;
   env: { ASSETS?: Fetcher };
@@ -83,15 +98,19 @@ export const onRequestGet: PagesFunction = async ({ request }) => {
     }
 
     const dohData = (await dohResp.json()) as DoHResponse;
-    const ips = extractIps(dohData);
+    const records = extractRecords(dohData);
     const edge = request.cf?.colo;
 
     return jsonResponse({
       domain,
       recordType: type,
       dnsServer: serverKey,
-      verdict: classifyVerdict(ips),
-      ips,
+      verdict: classifyVerdict(dohData.Status, records),
+      ips: records.ips,
+      aliases: records.aliases,
+      mx: records.mx,
+      texts: records.texts,
+      other: records.other,
       rcode: dohData.Status,
       raw: dohData,
       timestamp: new Date().toISOString(),
@@ -103,14 +122,51 @@ export const onRequestGet: PagesFunction = async ({ request }) => {
   }
 };
 
-function extractIps(doh: DoHResponse): Array<{ ip: string; type: string; ttl: number; ipClass: string }> {
-  if (!doh.Answer) return [];
-  return doh.Answer.filter((a) => a.type === 1 || a.type === 28).map((a) => ({
-    ip: a.data,
-    type: a.type === 28 ? 'AAAA' : 'A',
-    ttl: a.TTL,
-    ipClass: classifyIp(a.data),
-  }));
+// IANA DNS RR type numbers we render in the UI
+const TYPE_NAME: Record<number, string> = {
+  1: 'A',
+  2: 'NS',
+  5: 'CNAME',
+  6: 'SOA',
+  12: 'PTR',
+  15: 'MX',
+  16: 'TXT',
+  28: 'AAAA',
+  33: 'SRV',
+  35: 'NAPTR',
+  41: 'OPT',
+  43: 'DS',
+  46: 'RRSIG',
+  47: 'NSEC',
+  48: 'DNSKEY',
+  257: 'CAA',
+};
+
+function extractRecords(doh: DoHResponse): ExtractedRecords {
+  const empty: ExtractedRecords = { ips: [], aliases: [], texts: [], mx: [], other: [] };
+  if (!doh.Answer) return empty;
+
+  for (const a of doh.Answer) {
+    const typeName = TYPE_NAME[a.type] ?? `T${a.type}`;
+    const base: ExtractedRecord = { data: a.data, type: typeName, ttl: a.TTL };
+
+    if (a.type === 1 || a.type === 28) {
+      empty.ips.push({ ...base, ipClass: classifyIp(a.data) });
+    } else if (a.type === 5 || a.type === 2 || a.type === 12 || a.type === 257) {
+      // CNAME / NS / PTR / CAA — name references, not IPs
+      empty.aliases.push(base);
+    } else if (a.type === 16) {
+      empty.texts.push(base);
+    } else if (a.type === 15) {
+      // MX data is "priority target" — keep verbatim; UI splits on first space
+      empty.mx.push(base);
+    } else {
+      // SOA / SRV / DS / DNSSEC etc. — surface in "other" so the raw panel
+      // can also reveal them
+      empty.other.push(base);
+    }
+  }
+  return empty;
 }
 
 function classifyIp(ip: string): string {
@@ -126,15 +182,32 @@ function classifyIp(ip: string): string {
   return 'public';
 }
 
-function classifyVerdict(ips: { ipClass: string }[]): string {
-  if (ips.length === 0) return 'NXDOMAIN';
-  const classes = new Set(ips.map((i) => i.ipClass));
-  if (classes.size === 1) {
-    const first = classes.values().next().value;
-    return first ?? 'unknown';
+function classifyVerdict(rcode: number, rec: ExtractedRecords): string {
+  // No answers at all
+  if (rec.ips.length === 0 && rec.aliases.length === 0 && rec.texts.length === 0 && rec.mx.length === 0 && rec.other.length === 0) {
+    if (rcode === 3) return 'NXDOMAIN';
+    if (rcode === 0) return 'NODATA';
+    return `RCODE_${rcode}`;
   }
-  if (classes.has('public')) return 'mixed';
-  return Array.from(classes).sort().join('+');
+
+  // If we have IP answers, classify by IP class (existing behavior)
+  if (rec.ips.length > 0) {
+    const classes = new Set(rec.ips.map((i) => i.ipClass ?? 'unknown'));
+    if (classes.size === 1) {
+      const first = classes.values().next().value;
+      return first ?? 'unknown';
+    }
+    if (classes.has('public')) return 'mixed';
+    return Array.from(classes).sort().join('+');
+  }
+
+  // No IP answers, but other record types came back — summarize by type
+  const types: string[] = [];
+  if (rec.aliases.length > 0) types.push(rec.aliases[0].type);
+  if (rec.mx.length > 0) types.push('MX');
+  if (rec.texts.length > 0) types.push('TXT');
+  if (rec.other.length > 0) types.push(rec.other[0].type);
+  return types.join('+') || 'empty';
 }
 
 function jsonResponse(body: unknown, status = 200): Response {

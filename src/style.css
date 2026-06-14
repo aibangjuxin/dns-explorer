@@ -215,6 +215,13 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .verdict.cgnat      { background: var(--cgnat); color: white; }
 .verdict.mixed      { background: var(--accent); color: white; }
 .verdict.nxdomain   { background: var(--error); color: white; }
+.verdict.nodata     { background: var(--text-dim); color: white; }
+.verdict.cname      { background: var(--accent); color: white; }
+.verdict.ns         { background: var(--local); color: white; }
+.verdict.mx         { background: var(--cgnat); color: white; }
+.verdict.txt        { background: var(--private); color: #1e1b08; }
+.verdict.soa        { background: var(--text-dim); color: white; }
+.verdict.empty      { background: var(--text-dim); color: white; }
 
 .meta-row {
   display: flex;
@@ -260,6 +267,34 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   color: var(--text-muted);
   padding: 1.5rem;
   font-style: italic;
+}
+
+.result h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 1.25rem 0 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+.result h3:first-child { margin-top: 0; }
+
+.ip-item.alias {
+  background: rgba(244, 129, 32, 0.06);
+  border-color: rgba(244, 129, 32, 0.2);
+}
+.ip-item.text {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.txt-data {
+  word-break: break-all;
+  white-space: pre-wrap;
+  font-size: 0.85rem;
+  width: 100%;
 }
 
 details {
