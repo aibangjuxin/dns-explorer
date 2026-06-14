@@ -1,0 +1,16 @@
+{
+  "name": "dns-explorer",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Real-time DNS lookup via Cloudflare Pages Functions + DoH",
+  "scripts": {
+    "dev": "wrangler pages dev ./src --compatibility-date=2026-01-01",
+    "deploy": "wrangler pages deploy ./src --project-name=dns-explorer --branch=main",
+    "deploy:preview": "wrangler pages deploy ./src --project-name=dns-explorer"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250101.0",
+    "typescript": "^5.7.0",
+    "wrangler": "^3.114.0"
+  }
+}

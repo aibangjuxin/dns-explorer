@@ -1,0 +1,16 @@
+# dependencies
+node_modules/
+
+# wrangler local state
+.wrangler/
+.dev.vars
+
+# build artifacts
+dist/
+.tsbuildinfo
+*.log
+.DS_Store
+
+# editor
+.vscode/
+.idea/

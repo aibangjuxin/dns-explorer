@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Real-time DNS lookup tool powered by Cloudflare Pages Functions and DoH" />
+  <title>DNS Explorer · dns.caep.uk</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%90%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1><span class="logo">🌐</span> DNS Explorer</h1>
+      <p class="subtitle">
+        Real-time DNS lookups via
+        <a href="https://developers.cloudflare.com/pages/functions/" target="_blank" rel="noopener">Cloudflare Pages Functions</a>
+        +
+        <a href="https://developers.cloudflare.com/1.1.1.1/encryption/dns-over-https/" target="_blank" rel="noopener">DNS-over-HTTPS</a>
+      </p>
+    </header>
+
+    <section class="query-box" aria-label="Query form">
+      <div class="field field-domain">
+        <label for="domain">Domain</label>
+        <input id="domain" type="text" placeholder="example.com" value="github.com" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="field field-type">
+        <label for="type">Type</label>
+        <select id="type">
+          <option value="A">A</option>
+          <option value="AAAA">AAAA</option>
+          <option value="CNAME">CNAME</option>
+          <option value="MX">MX</option>
+          <option value="TXT">TXT</option>
+          <option value="NS">NS</option>
+        </select>
+      </div>
+      <div class="field field-server">
+        <label for="server">Resolver</label>
+        <select id="server">
+          <option value="cloudflare">Cloudflare 1.1.1.1</option>
+          <option value="google">Google 8.8.8.8</option>
+          <option value="quad9">Quad9 9.9.9.9</option>
+        </select>
+      </div>
+      <button id="query-btn" class="btn-primary">🔍 Lookup</button>
+    </section>
+
+    <section class="presets" aria-label="Quick test domains">
+      <span>Quick test:</span>
+      <button data-d="baidu.com" data-t="A">baidu.com</button>
+      <button data-d="google.com" data-t="A">google.com</button>
+      <button data-d="github.com" data-t="A">github.com</button>
+      <button data-d="cloudflare.com" data-t="A">cloudflare.com</button>
+      <button data-d="openai.com" data-t="A">openai.com</button>
+      <button data-d="google.com" data-t="AAAA">google.com (AAAA)</button>
+      <button data-d="github.com" data-t="MX">github.com (MX)</button>
+    </section>
+
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+    <article id="result" class="result hidden" aria-live="polite"></article>
+
+    <footer>
+      <p>
+        Powered by Cloudflare Pages · Source on
+        <a href="https://github.com/aibangjuxin/dns-explorer" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </footer>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
